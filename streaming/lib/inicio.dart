@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 child: const Text(
-                  'Iniciar',
+                  'Next>>',
                   style: TextStyle(fontSize: 18),
                 ),
               ),

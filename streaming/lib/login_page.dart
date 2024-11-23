@@ -40,6 +40,13 @@ class _LoginPageState extends State<LoginPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _registerUsernameController.dispose();
+    _registerPasswordController.dispose();
+    _lastnameController.dispose();
+    _firstnameController.dispose();
+    _countryController.dispose();
+    _loginUsernameController.dispose();
+    _loginPasswordController.dispose();
     super.dispose();
   }
 
@@ -56,8 +63,15 @@ class _LoginPageState extends State<LoginPage>
       try {
         final token = await _apiService.registerUser(userData);
         setState(() {
-          _responseMessage = "Registro exitoso. Token: $token";
+          _responseMessage =
+              "Registro exitoso. ¡Bienvenido a nuestra plataforma de streaming! Diríjase a Inicio de Sesión.";
         });
+
+        _registerUsernameController.clear();
+        _registerPasswordController.clear();
+        _lastnameController.clear();
+        _firstnameController.clear();
+        _countryController.clear();
       } catch (e) {
         setState(() {
           _responseMessage = e.toString();
@@ -76,7 +90,8 @@ class _LoginPageState extends State<LoginPage>
       try {
         final token = await _apiService.loginUser(loginData);
         setState(() {
-          _responseMessage = "Inicio de sesión exitoso. Token: $token";
+          _responseMessage =
+              "Inicio de sesión exitoso. ¡Disfrute su contenido!";
         });
       } catch (e) {
         setState(() {
@@ -89,99 +104,37 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Autenticación")),
+      appBar: AppBar(
+        title: Text(
+          "Bienvenido a Video Streaming",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(text: "Registro"),
-              Tab(text: "Iniciar Sesión"),
-            ],
+          Container(
+            color: Colors.deepPurple,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white70,
+              indicatorColor: Colors.amber,
+              tabs: [
+                Tab(icon: Icon(Icons.app_registration), text: "Registro"),
+                Tab(icon: Icon(Icons.login), text: "Iniciar Sesión"),
+              ],
+            ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
                 // Pestaña de Registro
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _registerFormKey,
-                    child: ListView(
-                      children: [
-                        TextFormField(
-                          controller: _registerUsernameController,
-                          decoration: InputDecoration(labelText: "Correo"),
-                          validator: (value) =>
-                              value!.isEmpty ? "El correo es requerido" : null,
-                        ),
-                        TextFormField(
-                          controller: _registerPasswordController,
-                          decoration: InputDecoration(labelText: "Contraseña"),
-                          obscureText: true,
-                          validator: (value) => value!.isEmpty
-                              ? "La contraseña es requerida"
-                              : null,
-                        ),
-                        TextFormField(
-                          controller: _lastnameController,
-                          decoration: InputDecoration(labelText: "Apellido"),
-                          validator: (value) => value!.isEmpty
-                              ? "El apellido es requerido"
-                              : null,
-                        ),
-                        TextFormField(
-                          controller: _firstnameController,
-                          decoration: InputDecoration(labelText: "Nombre"),
-                          validator: (value) =>
-                              value!.isEmpty ? "El nombre es requerido" : null,
-                        ),
-                        TextFormField(
-                          controller: _countryController,
-                          decoration: InputDecoration(labelText: "País"),
-                          validator: (value) =>
-                              value!.isEmpty ? "El país es requerido" : null,
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _registerUser,
-                          child: Text("Registrar"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildRegistrationForm(),
                 // Pestaña de Inicio de Sesión
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _loginFormKey,
-                    child: ListView(
-                      children: [
-                        TextFormField(
-                          controller: _loginUsernameController,
-                          decoration: InputDecoration(labelText: "Correo"),
-                          validator: (value) =>
-                              value!.isEmpty ? "El correo es requerido" : null,
-                        ),
-                        TextFormField(
-                          controller: _loginPasswordController,
-                          decoration: InputDecoration(labelText: "Contraseña"),
-                          obscureText: true,
-                          validator: (value) => value!.isEmpty
-                              ? "La contraseña es requerida"
-                              : null,
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _loginUser,
-                          child: Text("Iniciar Sesión"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildLoginForm(),
               ],
             ),
           ),
@@ -190,10 +143,112 @@ class _LoginPageState extends State<LoginPage>
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 _responseMessage!,
-                style: TextStyle(color: Colors.red),
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRegistrationForm() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _registerFormKey,
+        child: ListView(
+          children: [
+            Text(
+              "Cree su cuenta",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            _buildTextField(_registerUsernameController, "Correo Electrónico",
+                Icons.email, "El correo es requerido"),
+            _buildTextField(
+              _registerPasswordController,
+              "Contraseña",
+              Icons.lock,
+              "La contraseña es requerida",
+              isPassword: true,
+            ),
+            _buildTextField(_firstnameController, "Nombre", Icons.person,
+                "El nombre es requerido"),
+            _buildTextField(_lastnameController, "Apellido", Icons.person,
+                "El apellido es requerido"),
+            _buildTextField(_countryController, "País", Icons.public,
+                "El país es requerido"),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _registerUser,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: const Color.fromARGB(255, 41, 10,
+                    10), // Cambia el texto a blanco o cualquier color deseado
+              ),
+              child: Text("Registrar"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginForm() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _loginFormKey,
+        child: ListView(
+          children: [
+            Text(
+              "Inicie Sesión",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            _buildTextField(_loginUsernameController, "Correo Electrónico",
+                Icons.email, "El correo es requerido"),
+            _buildTextField(
+              _loginPasswordController,
+              "Contraseña",
+              Icons.lock,
+              "La contraseña es requerida",
+              isPassword: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _loginUser,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: const Color.fromARGB(255, 41, 10,
+                    10), // Cambia el texto a blanco o cualquier color deseado
+              ),
+              child: Text("Iniciar Sesión"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      IconData icon, String validationMessage,
+      {bool isPassword = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          prefixIcon: Icon(icon, color: Colors.deepPurple),
+          border: OutlineInputBorder(),
+        ),
+        obscureText: isPassword,
+        validator: (value) => value!.isEmpty ? validationMessage : null,
       ),
     );
   }
