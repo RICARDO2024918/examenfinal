@@ -21,12 +21,12 @@ class HomePage extends StatelessWidget {
               CircleAvatar(
                 radius: 50,
                 backgroundImage:
-                    AssetImage('assets/logo.png'), // Ruta de la imagen
+                    AssetImage('assets/imagen/logo.jpeg'), // Ruta de la imagen
               ),
               const SizedBox(height: 20),
               // Título de bienvenida
               const Text(
-                'Bienvenido a StreamVidio',
+                'Bienvenido a StreamVideo',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:streaming/api_servicce.dart';
+import 'package:streaming/home_page.dart'; // Asegúrate de importar la página HomePage1
 
 class LoginPage extends StatefulWidget {
   @override
@@ -93,6 +94,12 @@ class _LoginPageState extends State<LoginPage>
           _responseMessage =
               "Inicio de sesión exitoso. ¡Disfrute su contenido!";
         });
+
+        // Redirige a la página de inicio (HomePage1)
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage1()),
+        );
       } catch (e) {
         setState(() {
           _responseMessage = e.toString();
@@ -106,7 +113,7 @@ class _LoginPageState extends State<LoginPage>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Bienvenido a Video Streaming",
+          "Video Streaming",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.deepPurple,
