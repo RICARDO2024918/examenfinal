@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:streaming/administrador_page.dart';
 
 class HomePage1 extends StatefulWidget {
   @override

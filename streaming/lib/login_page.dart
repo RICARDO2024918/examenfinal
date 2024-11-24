@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:streaming/api_servicce.dart';
-import 'package:streaming/home_page.dart'; // Asegúrate de importar la página HomePage1
+import 'package:streaming/home_page.dart';
+import 'package:streaming/administrador_page.dart'; // Asegúrate de importar la página HomePage1 // Asegúrate de importar la página AdministradorPage
 
 class LoginPage extends StatefulWidget {
   @override
@@ -235,6 +236,21 @@ class _LoginPageState extends State<LoginPage>
                     10), // Cambia el texto a blanco o cualquier color deseado
               ),
               child: Text("Iniciar Sesión"),
+            ),
+            SizedBox(height: 20),
+            // Botón para el inicio de sesión de administrador
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdministradorPage()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black,
+              ),
+              child: Text("Entrar como Administrador"),
             ),
           ],
         ),
