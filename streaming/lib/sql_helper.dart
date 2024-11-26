@@ -1,8 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
-import './model/Persons.dart';
-
+import 'package:streaming/model/Persons.dart';
 //This class created by Satish Sharma
 //Date: 07-05-2023
 //Flutter Sqlite CRUD Operation works with Example code

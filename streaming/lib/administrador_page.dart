@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:streaming/api_servicce.dart';
-import 'package:streaming/home_page.dart';
-import 'administrador_secion.dart';
+import 'package:streaming/api_servicce.dart'; // Verifica que el nombre sea correcto
+import 'administrador_secion.dart'; // Asegúrate de que este archivo contenga un widget válido
 
 class AdministradorPage extends StatefulWidget {
   @override
@@ -10,8 +9,8 @@ class AdministradorPage extends StatefulWidget {
 
 class _AdministradorPageState extends State<AdministradorPage>
     with SingleTickerProviderStateMixin {
-  final _apiService = ApiService();
-  final _loginFormKey = GlobalKey<FormState>();
+  final ApiService _apiService = ApiService();
+  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
 
   final TextEditingController _loginUsernameController =
       TextEditingController();
@@ -29,26 +28,26 @@ class _AdministradorPageState extends State<AdministradorPage>
 
   void _loginUser() async {
     if (_loginFormKey.currentState!.validate()) {
-      final loginData = {
+      final Map<String, String> loginData = {
         "username": _loginUsernameController.text,
         "password": _loginPasswordController.text,
       };
 
       try {
-        final token = await _apiService.loginUser(loginData);
+        final String token = await _apiService.loginUser(loginData);
         setState(() {
           _responseMessage =
               "Inicio de sesión exitoso. ¡Disfrute su contenido!";
         });
 
-        // Redirige a la página de inicio (HomePage1)
+        // Redirige a la página de administrador
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => AdministradorSecion()),
         );
       } catch (e) {
         setState(() {
-          _responseMessage = e.toString();
+          _responseMessage = "Error: ${e.toString()}";
         });
       }
     }
@@ -58,55 +57,71 @@ class _AdministradorPageState extends State<AdministradorPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Inicio de Sesión - Administrador"),
+        title: const Text("Inicio de Sesión - Administrador"),
         backgroundColor: Colors.amber,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _loginFormKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Acceso Administrativo",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              _buildTextField(_loginUsernameController, "Usuario", Icons.person,
-                  "El usuario es requerido"),
-              _buildTextField(_loginPasswordController, "Contraseña",
-                  Icons.lock, "La contraseña es requerida",
-                  isPassword: true),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _loginUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black,
-                ),
-                child: Text("Iniciar Sesión"),
-              ),
-              if (_responseMessage != null) ...[
-                SizedBox(height: 20),
-                Text(
-                  _responseMessage!,
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Acceso Administrativo",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 20),
+                _buildTextField(
+                  _loginUsernameController,
+                  "Usuario",
+                  Icons.person,
+                  "El usuario es requerido",
+                ),
+                _buildTextField(
+                  _loginPasswordController,
+                  "Contraseña",
+                  Icons.lock,
+                  "La contraseña es requerida",
+                  isPassword: true,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _loginUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black,
+                  ),
+                  child: const Text("Iniciar Sesión"),
+                ),
+                if (_responseMessage != null) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    _responseMessage!,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String labelText,
-      IconData icon, String validationMessage,
-      {bool isPassword = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String labelText,
+    IconData icon,
+    String validationMessage, {
+    bool isPassword = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextFormField(
@@ -114,10 +129,15 @@ class _AdministradorPageState extends State<AdministradorPage>
         decoration: InputDecoration(
           labelText: labelText,
           prefixIcon: Icon(icon, color: Colors.amber),
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         obscureText: isPassword,
-        validator: (value) => value!.isEmpty ? validationMessage : null,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return validationMessage;
+          }
+          return null;
+        },
       ),
     );
   }
