@@ -22,7 +22,7 @@ onCreate Function
       onCreate: (db, version) async {
         await db.execute(
           //   "CREATE TABLE $_tableName (id TEXT PRIMARY KEY, name TEXT, age TEXT, address TEXT, description TEXT)",
-          "CREATE TABLE $_tableName (id TEXT PRIMARY KEY, name TEXT, age TEXT, address TEXT)",
+          "CREATE TABLE $_tableName (id TEXT PRIMARY KEY, usuario TEXT, rol TEXT, address TEXT)",
         );
       },
       version: 1,
@@ -61,8 +61,8 @@ onCreate Function
     return List.generate(personsMap.length, (index) {
       return Person(
           id: personsMap[index]["id"],
-          name: personsMap[index]["name"],
-          age: personsMap[index]["age"],
+          usuario: personsMap[index]["usuario"],
+          rol: personsMap[index]["rol"],
           address: personsMap[index]["address"]);
     });
   }
@@ -78,8 +78,8 @@ onCreate Function
     if (person.length == 1) {
       return Person(
           id: person[0]["id"],
-          name: person[0]["name"],
-          age: person[0]["age"],
+          usuario: person[0]["usuario"],
+          rol: person[0]["rol"],
           address: person[0]["address"]);
     } else {
       return Person();

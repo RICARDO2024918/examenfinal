@@ -59,15 +59,15 @@ class _AdministradorSecionState extends State<AdministradorSecion> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: "Nombre"),
+              decoration: InputDecoration(labelText: "Usuario"),
             ),
             TextFormField(
               controller: _ageController,
-              decoration: InputDecoration(labelText: "Edad"),
+              decoration: InputDecoration(labelText: "Rol"),
             ),
             TextFormField(
               controller: _addressController,
-              decoration: InputDecoration(labelText: "Dirección"),
+              decoration: InputDecoration(labelText: "Pais"),
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -95,8 +95,8 @@ class _AdministradorSecionState extends State<AdministradorSecion> {
         final person = _journals[index];
         return ListTile(
           leading: Text(person.id ?? "Sin ID"), // Manejar posibles nulos
-          title:
-              Text("${person.name ?? 'Sin nombre'} (${person.age ?? 'N/A'})"),
+          title: Text(
+              "${person.usuario ?? 'Sin nombre'} (${person.rol ?? 'N/A'})"),
           subtitle: Text(person.address ?? "Sin dirección"),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -107,8 +107,8 @@ class _AdministradorSecionState extends State<AdministradorSecion> {
                   setState(() {
                     id =
                         person.id ?? ""; // Proporcionar un valor predeterminado
-                    _nameController.text = person.name ?? "";
-                    _ageController.text = person.age ?? "";
+                    _nameController.text = person.usuario ?? "";
+                    _ageController.text = person.rol ?? "";
                     _addressController.text = person.address ?? "";
                   });
                 },
@@ -140,8 +140,8 @@ class _AdministradorSecionState extends State<AdministradorSecion> {
     await SQLHelper.insert(
       Person(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text,
-        age: _ageController.text,
+        usuario: _nameController.text,
+        rol: _ageController.text,
         address: _addressController.text,
       ),
     );
