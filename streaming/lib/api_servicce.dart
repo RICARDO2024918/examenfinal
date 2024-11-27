@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String registerUrl = "http://192.168.1.6:8080/auth/register";
-  final String loginUrl = "http://192.168.1.6:8080/auth/login";
+  final String registerUrl = "http://192.168.0.106:8080/auth/register";
+  final String loginUrl = "http://192.168.0.106:8080/auth/login";
   //final String registerUrl = "http://192.168.100.12:8080/auth/reister";
   //final String loginUrl = "http://192.168.100.12:8080/auth/login";
 

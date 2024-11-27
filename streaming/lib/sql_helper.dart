@@ -1,133 +1,84 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:streaming/model/Persons.dart';
-//This class created by Satish Sharma
-//Date: 07-05-2023
-//Flutter Sqlite CRUD Operation works with Example code
+import 'model/Persons.dart';
 
-//It’s just a SQLHelper Class making which we do in every OOP language.
 class SQLHelper {
-/*
-getDataBase() function takes 3 arguments and gives us a database which we again return to our future function.
-String path of the Database
-Version
-onCreate Function
-*/
+  static Database? _database;
 
-  static String _tableName = "persondetails";
+  // Método para inicializar la base de datos
+  static Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDB();
+    return _database!;
+  }
 
-  static Future<Database> getDataBase() async {
-    return openDatabase(
-      join(await getDatabasesPath(), "personsDatabase.db"),
-      onCreate: (db, version) async {
-        await db.execute(
-          //   "CREATE TABLE $_tableName (id TEXT PRIMARY KEY, name TEXT, age TEXT, address TEXT, description TEXT)",
-          "CREATE TABLE $_tableName (id TEXT PRIMARY KEY, usuario TEXT, rol TEXT, address TEXT)",
-        );
-      },
+  // Configuración inicial de la base de datos
+  static Future<Database> _initDB() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'persondetails.db');
+
+    return await openDatabase(
+      path,
       version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+          CREATE TABLE persondetails (
+            id TEXT PRIMARY KEY,
+            usuario TEXT,
+            rol TEXT,
+            address TEXT
+          )
+        ''');
+      },
     );
   }
 
-//============================= START CURD ===================================
-
-//============================================================================
-//Insert/Add Method
-// First Insert Function Which will take values and add them inside the Database
+  // Insertar un nuevo registro
   static Future<int> insert(Person person) async {
-    int userId = 0;
-    Database db = await getDataBase();
-    String path = await getDatabasesPath();
-    print('''getDatabasesPath: ${path}''');
+    final db = await SQLHelper.database;
 
-    await db
-        .insert(_tableName, person.toMap(),
-            conflictAlgorithm: ConflictAlgorithm.replace)
-        .then((value) {
-      userId = value;
-    });
-    return userId;
+    return await db.insert(
+      'persondetails',
+      person.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-//============================================================================
-//Get All Method
-//After adding data then comes the part where we need data and show it into the UI.
-//first there is a need for a database and then db.query method provides all the rows in the provided table inside the query() method.
-
+  // Obtener todos los registros
   static Future<List<Person>> getAllPersons() async {
-    Database db = await getDataBase();
-    List<Map<String, dynamic>> personsMap = await db.query(_tableName);
-    print('''SQlite: ${personsMap}''');
-    return List.generate(personsMap.length, (index) {
+    final db = await SQLHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query('persondetails');
+
+    return List.generate(maps.length, (i) {
       return Person(
-          id: personsMap[index]["id"],
-          usuario: personsMap[index]["usuario"],
-          rol: personsMap[index]["rol"],
-          address: personsMap[index]["address"]);
+        id: maps[i]['id'],
+        usuario: maps[i]['usuario'],
+        rol: maps[i]['rol'],
+        address: maps[i]['address'],
+      );
     });
   }
 
-//============================================================================
-//Get method:
-//This will return a Single user by using Where in the SQL query. For this, we need to pass the userID while calling this function.
+  // Actualizar un registro
+  static Future<int> update(
+      String id, String usuario, String rol, String address) async {
+    final db = await SQLHelper.database;
 
-  static Future<Person> getPerson(String userId) async {
-    Database db = await getDataBase();
-    List<Map<String, dynamic>> person =
-        await db.rawQuery("SELECT * FROM $_tableName WHERE id = $userId");
-    if (person.length == 1) {
-      return Person(
-          id: person[0]["id"],
-          usuario: person[0]["usuario"],
-          rol: person[0]["rol"],
-          address: person[0]["address"]);
-    } else {
-      return Person();
-    }
+    return await db.update(
+      'persondetails',
+      {'usuario': usuario, 'rol': rol, 'address': address},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
-//============================================================================
-//Update Method
-//Updating a particular person needs UserId and new values in the function when calling it. Here is the function for that below.
-//Need to add an Update query and give it the table and updated values where id = userId.
-
-  static Future<void> update(
-      String userId, String name, String age, String address) async {
-    Database db = await getDataBase();
-    db.rawUpdate(
-        "UPDATE $_tableName SET name = '$name', age = '$age', address = '$address' WHERE id = '$userId'");
+  // Eliminar un registro
+  static Future<void> deletePerson(String id) async {
+    final db = await SQLHelper.database;
+    await db.delete(
+      'persondetails',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
-
-//============================================================================
-//Delete method
-
-  static Future<void> deletePerson(String userId) async {
-    Database db = await getDataBase();
-    await db.rawDelete("DELETE FROM $_tableName WHERE id = '$userId'");
-  }
-
-  //Now get the ID of the last row inserted:
-  static Future<int> lastInsertedRowId(String userId) async {
-    Database db = await getDataBase();
-    await db.execute("select last_insert_rowid()");
-
-    // The row ID is a 64-bit value - cast the Command result to an Int64.
-    //Int64 LastRowID64 = (Int64)Command.ExecuteScalar();
-
-    // int lastRowID = (int)LastRowID64;
-    return 1;
-  }
-
-//
-//  Command.CommandText = "select last_insert_rowid()";
-//
-//  // The row ID is a 64-bit value - cast the Command result to an Int64.
-//  //
-//  Int64 LastRowID64 = (Int64)Command.ExecuteScalar();
-//
-//  // Then grab the bottom 32-bits as the unique ID of the row.
-//  //
-//  int LastRowID = (int)LastRowID64;
-
-//============================= END ===============================================
 }
